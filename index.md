@@ -1,37 +1,46 @@
-## Welcome to GitHub Pages
+## Expected results of reimplementing pipes and redirections in bash
 
-You can use the [editor on GitHub](https://github.com/GroteGnoom/bash_info/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+Suppose we have a file test.txt:
+```
+I am a testfile
+```
+### `<` redirects to stdin
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+And we redirect it to cat -e:
 
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+```
+< test.txt cat -e
 ```
 
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
+we expect:
 
-### Jekyll Themes
+```
+I am a testfile$
+```
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/GroteGnoom/bash_info/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+From the `$` we can see the file actually passed through `cat -e`, instead of going directly to stdout for example.
 
-### Support or Contact
+### Redirections can be placed anywhere
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+These all give the same results
+```
+< test.txt cat -e
+cat < test.txt -e
+cat -e < test.txt
+```
+### You can have multiple redirections, they are processed in order
+
+Suppose we have a second file test2.txt:
+```
+This is the second testfile
+```
+
+and we redirect both files to stdin:
+```
+< test.txt < test2.txt cat -e
+```
+
+Then even though test.txt is first redirected to stdin, test2.txt is overrides it, so you get:
+```
+This is the second testfile$
+```
